@@ -42,62 +42,26 @@
   </q-expansion-item>
 </template>
 
-<script>
-import { defineComponent, ref, unref, computed } from 'vue'
-import { useI18n } from 'vue-i18n'
-import { i18n } from 'boot/i18n.js'
-
-export default defineComponent({
-  name: 'EssentialLink',
-  props: {
-    title: {
-      type: String,
-      required: true,
-    },
-
-    caption: {
-      type: String,
-      default: '',
-    },
-    link: {
-      type: String,
-      default: null,
-    },
-    to: {
-      type: String,
-      default: '',
-    },
-    action: {
-      type: Function,
-      default: null,
-    },
-    show: {
-      type: Boolean,
-      default: true,
-    },
-    icon: {
-      type: String,
-      default: '',
-    },
+<script setup>
+const props = defineProps({
+  title: {
+    type: String,
+    required: true,
   },
-  setup(props) {
-    const { locale } = useI18n({ useScope: 'global' })
-    const $t = i18n.global.t
-    const leftDrawerOpen = ref(false)
-    const localeOptions = computed(() => [
-      { value: 'en-US', label: $t('English') },
-      { value: 'vn-VN', label: $t('Vietnamese') },
-    ])
-    const languageRef = ref(null)
-    const blur = () => {
-      unref(languageRef).blur()
-    }
-    return {
-      languageRef,
-      blur,
-      locale,
-      localeOptions,
-    }
+
+  caption: {
+    type: String,
+    default: '',
+  },
+
+  link: {
+    type: String,
+    default: '#',
+  },
+
+  icon: {
+    type: String,
+    default: '',
   },
 })
 </script>

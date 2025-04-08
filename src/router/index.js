@@ -1,3 +1,4 @@
+import { defineRouter } from '#q-app/wrappers'
 import { route } from 'quasar/wrappers'
 import {
   createRouter,
