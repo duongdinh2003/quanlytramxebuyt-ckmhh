@@ -101,6 +101,11 @@ export default {
         res.status(200).json({ message: 'Done!' })
       } else {
         // Process the workspace data here
+        const data = workspaceAPI.map((item) => ({
+          name: item.name,
+          description: item.description,
+          href: item.href,
+        }))
         res.json(data)
       }
     } catch (error) {

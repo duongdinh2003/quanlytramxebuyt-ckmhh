@@ -13,12 +13,12 @@
       v-model:pagination="projectionPagination"
     >
       <template v-slot:top>
-        <div class="text-h6">{{ $t("Projections") }}</div>
+        <div class="text-h6">{{ $t('Projections') }}</div>
         <q-btn rounded color="primary" icon="add" style="margin-left: 10px">
           <q-tooltip anchor="center right" self="center start">{{
-            $t("Add projection")
+            $t('Add projection')
           }}</q-tooltip>
-          <PopupProjection v-model:row="newProjection" :list="rows"/>
+          <PopupProjection v-model:row="newProjection" :list="rows" />
         </q-btn>
         <q-space />
         <q-input debounce="300" color="primary" v-model="filter" @update:model-value="getAll()">
@@ -30,7 +30,7 @@
       <template v-slot:body="props">
         <q-tr :props="props">
           <q-td key="id" :props="props">
-              {{ props.row.id }}
+            {{ props.row.id }}
           </q-td>
           <q-td key="name" :props="props">
             <q-badge color="primary">
@@ -41,11 +41,7 @@
             {{ props.row.definition }}
           </q-td>
           <q-td key="action" :props="props">
-            <q-btn
-              v-bind="actionButtonProps"
-              icon="edit"
-              style="margin-right: 10px"
-            >
+            <q-btn v-bind="actionButtonProps" icon="edit" style="margin-right: 10px">
               <!-- popup projection edit -->
               <PopupProjection v-model:row="props.row" :list="rows" />
             </q-btn>
@@ -80,57 +76,55 @@ import {
   ref,
   unref,
   computed,
-  getCurrentInstance,
+  // getCurrentInstance,
   onMounted,
-} from "vue";
-import { useQuasar } from "quasar";
-import { i18n } from "boot/i18n.js";
-import PopupProjection from "src/pages/ProjectionManagementPage/popupProjection.vue";
+} from 'vue'
+import { useQuasar } from 'quasar'
+import { i18n } from 'boot/i18n.js'
+import PopupProjection from 'src/pages/ProjectionManagementPage/popupProjection.vue'
 
-import {
-  getAllProjection,
-  deleteProjection,
-} from "src/api/projection";
+import { activateUser } from 'src/api/user'
+import { getAllProjection, deleteProjection } from 'src/api/projection'
 
 export default defineComponent({
-  name: "ProjectionManagementPage",
+  name: 'ProjectionManagementPage',
   components: {
     PopupProjection,
   },
   setup() {
-    const $t = i18n.global.t;
-    const $q = useQuasar();
-    const filter = ref("");
-    const visibleColumns = ref(["name", "definition", "action"]);
+    const $t = i18n.global.t
+    const $q = useQuasar()
+    const filter = ref('')
+    const visibleColumns = ref(['name', 'definition', 'action'])
     const actionButtonProps = {
-      size: "sm",
-      color: "primary",
+      size: 'sm',
+      color: 'primary',
       round: true,
       dense: true,
-    };
+    }
     const columns = computed(() => [
       {
-        name: "id",
+        name: 'id',
         required: true,
-        label: "Id",
-        align: "left",
-        field: "id",
+        label: 'Id',
+        align: 'left',
+        field: 'id',
       },
       {
-        name: "name",
-        align: "center",
-        label: $t("Name"),
-        field: "name",
+        name: 'name',
+        align: 'center',
+        label: $t('Name'),
+        field: 'name',
         sortable: true,
       },
       {
-        name: "definition",
-        align: "center",
-        label: $t("Definition"),
-        field: "definition",
+        name: 'definition',
+        align: 'center',
+        label: $t('Definition'),
+        field: 'definition',
       },
-      { name: "action", align: "center", label: $t("Action") },
-    ]);
+      { name: 'action', align: 'center', label: $t('Action') },
+    ])
 
     const newProjection = ref({
       name: null,
@@ -138,32 +132,33 @@ export default defineComponent({
     })
     const toggle = async (row) => {
       $q.dialog({
-        title: $t("Warning"),
+        title: $t('Warning'),
         message: !row.activate
-          ? `${$t("Deactivate user")}  ${row.email}?`
-          : `${$t("Activate user")}  ${row.email}?`,
+          ? `${$t('Deactivate user')}  ${row.email}?`
+          : `${$t('Activate user')}  ${row.email}?`,
         ok: {
           push: true,
         },
         cancel: {
           push: true,
-          color: "negative",
+          color: 'negative',
         },
         persistent: true,
       })
         .onOk(async () => {
-          const response = await activateUser(row);
+          const response = await activateUser(row)
+          console.log(response)
         })
         .onCancel(() => {
-          row.activate = !row.activate;
+          row.activate = !row.activate
         })
-        .onDismiss(() => { });
-    };
+        .onDismiss(() => {})
+    }
     const projectionPagination = ref({
       page: 1,
       rowsPerPage: 10,
       rowsNumber: 0,
-    });
+    })
     const getAll = async (val) => {
       const query = {
         page: val ? val : unref(projectionPagination).page,
@@ -173,25 +168,40 @@ export default defineComponent({
       if (unref(filter)) {
         query.page = 1
       }
-      const response = await getAllProjection(query);
-      rows.value = response.data;
-      projectionPagination.value.page = response.page;
-      projectionPagination.value.rowsPerPage = response.per_page;
+      const response = await getAllProjection(query)
+      rows.value = response.data
+      projectionPagination.value.page = response.page
+      projectionPagination.value.rowsPerPage = response.per_page
       projectionPagination.value.rowsNumber = parseInt(
-        Math.ceil(response.count / response.per_page)
-      );
-    };
-    const rows = ref([]);
+        Math.ceil(response.count / response.per_page),
+      )
+    }
+    const rows = ref([])
     onMounted(async () => {
-      await getAll();
-    });
+      await getAll()
+    })
 
     const onDeleteProjection = async (row) => {
       const resolve = async () => {
-        await getAll();
-      };
-      const res = await deleteProjection(row, resolve);
-    };
+        await getAll()
+      }
+      const res = await deleteProjection(row, resolve)
+      if (res) {
+        $q.notify({
+          type: 'positive',
+          message: $t('Projection deleted'),
+          position: 'top',
+          timeout: 2000,
+        })
+      } else {
+        $q.notify({
+          type: 'negative',
+          message: $t('Error deleting projection'),
+          position: 'top',
+          timeout: 2000,
+        })
+      }
+    }
     return {
       newProjection,
       filter,
@@ -203,8 +213,8 @@ export default defineComponent({
       actionButtonProps,
       projectionPagination,
       getAll,
-    };
+    }
   },
-});
+})
 </script>
 <style lang="scss"></style>

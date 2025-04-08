@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client'
-import pkg from 'lodash'
-const { update, map } = pkg
+// import pkg from 'lodash'
+// const { update, map } = pkg
 
 const prisma = new PrismaClient()
 
@@ -43,6 +43,7 @@ export default {
       })
       res.json(updateLocation)
     } catch (e) {
+      console.log(e)
       res.status(400).json({ message: 'Location create attempt failed!' })
     }
   },

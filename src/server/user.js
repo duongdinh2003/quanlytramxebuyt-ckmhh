@@ -47,8 +47,8 @@ export default {
       })
       res.json(user)
     } catch (e) {
-      res.status(404)
-      res.json({ error: 'There is some errors!' })
+      console.log(e)
+      res.status(404).json({ error: 'There is some errors!' })
     }
   },
   /**
@@ -114,6 +114,8 @@ export default {
    */
   loginGoogle: async (req, res) => {
     const { email, password, role, profile } = req.body
+    console.log('role', role)
+
     try {
       const user = await prisma.user.upsert({
         where: {
@@ -156,6 +158,7 @@ export default {
       }
       res.json(user)
     } catch (e) {
+      console.log(e)
       res.status(400).json({ message: 'Cannot login with google!' })
     }
   },
@@ -236,6 +239,7 @@ export default {
       })
       res.json(upsertUser)
     } catch (e) {
+      console.log(e)
       res.status(400).json({ message: 'Unxepected errors!' })
     }
   },

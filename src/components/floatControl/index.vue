@@ -47,11 +47,11 @@
 
 <script>
 import { ref, defineComponent, getCurrentInstance, computed } from 'vue'
-import { useQuasar } from 'quasar'
+// import { useQuasar } from 'quasar'
 import { i18n } from 'boot/i18n.js'
 import TabAction from 'src/components/floatControl/tabAction.vue'
-import TabLocation from 'src/components/floatControl/TabLocation.vue'
-import TabUpload from 'src/components/floatControl/TabUpload.vue'
+import TabLocation from 'src/components/floatControl/tabAction.vue'
+import TabUpload from 'src/components/floatControl/tabAction.vue'
 
 export default defineComponent({
   name: 'FloatControl',
@@ -73,7 +73,8 @@ export default defineComponent({
   emits: ['closePopup'],
   setup(props, { emit }) {
     const vm = getCurrentInstance().proxy
-    const $q = useQuasar()
+    // const $q = useQuasar()
+    console.log('FloatControl', props, emit)
     const $t = i18n.global.t
 
     const tabModel = ref('tab-action')

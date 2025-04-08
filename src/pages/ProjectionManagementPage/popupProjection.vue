@@ -21,7 +21,7 @@
       autofocus
       type="textarea"
       :label="$t('Definition')"
-      style="min-height: 50px;"
+      style="min-height: 50px"
     />
   </q-popup-edit>
 </template>
@@ -31,50 +31,48 @@ import {
   defineComponent,
   ref,
   unref,
-  getCurrentInstance,
+  // getCurrentInstance,
   computed,
-} from "vue";
-import { useQuasar } from "quasar";
-import { i18n } from "boot/i18n.js";
-import {
-  createProjection,
-  updateProjection,
-} from "src/api/projection";
+} from 'vue'
+// import { useQuasar } from "quasar";
+import { i18n } from 'boot/i18n.js'
+import { createProjection, updateProjection } from 'src/api/projection'
 
 export default defineComponent({
-  name: "PopupLocation",
+  name: 'PopupLocation',
   props: {
     row: Object,
     list: Array,
   },
   setup(props, { emit }) {
-    const vm = getCurrentInstance().proxy;
-    const $q = useQuasar();
-    const $t = i18n.global.t;
-    const computedRow = ref(props.row);
+    // const vm = getCurrentInstance().proxy;
+    // const $q = useQuasar();
+    console.log('emit', emit)
+    const $t = i18n.global.t
+    const computedRow = ref(props.row)
     const title = computed(() => {
-      return props.row.id ? `${$t('Update projection')}: ${unref(computedRow).name}`: `${$t('Add projection')}:`
+      return props.row.id
+        ? `${$t('Update projection')}: ${unref(computedRow).name}`
+        : `${$t('Add projection')}:`
     })
     const saveEdit = async (value, _props) => {
       const updateParams = {
         id: value.id,
-      };
-      if (value.name !== _props.name) updateParams.name = value.name;
-      if (value.definition !== _props.definition)
-        updateParams.definition = value.definition;
-      
+      }
+      if (value.name !== _props.name) updateParams.name = value.name
+      if (value.definition !== _props.definition) updateParams.definition = value.definition
+
       if (updateParams.id) {
-        const response = await updateProjection(updateParams);
-        const currentRow = props.list.find(
-          (row) => row.id === response.id
-        );
-        Object.assign(currentRow, { ...response });
+        const response = await updateProjection(updateParams)
+        const currentRow = props.list.find((row) => row.id === response.id)
+        Object.assign(currentRow, { ...response })
         return
       } else {
         delete updateParams.id
         const response = await createProjection(updateParams)
+        console.log(response)
       }
-    };
+    }
     const updateModel = (val) => {
       console.log(val)
     }
@@ -83,9 +81,9 @@ export default defineComponent({
       title,
       saveEdit,
       updateModel,
-    };
+    }
   },
-});
+})
 </script>
 <style lang="scss">
 .popupEdit {

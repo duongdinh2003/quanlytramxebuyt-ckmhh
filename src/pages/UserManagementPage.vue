@@ -1,7 +1,8 @@
 <template>
   <div class="q-pa-md">
     <q-table
-      flat bordered
+      flat
+      bordered
       title="Treats"
       :rows="rows"
       :columns="columns"
@@ -48,7 +49,7 @@
             {{ props.row.name }}
           </q-td>
           <q-td key="role" :props="props">
-            <q-badge v-if="props.row.role==='USER'" color="primary">
+            <q-badge v-if="props.row.role === 'USER'" color="primary">
               {{ props.row.role }}
             </q-badge>
             <q-badge v-else color="red">
@@ -56,9 +57,12 @@
             </q-badge>
           </q-td>
           <q-td key="activate" :props="props">
-            <q-toggle :disable="props.row.role==='ADMIN'"  v-model="props.row.activate"
-            @update:model-value="toggle(props.row)">
-              <q-tooltip>{{ $t("Activate user") }}</q-tooltip>
+            <q-toggle
+              :disable="props.row.role === 'ADMIN'"
+              v-model="props.row.activate"
+              @update:model-value="toggle(props.row)"
+            >
+              <q-tooltip>{{ $t('Activate user') }}</q-tooltip>
             </q-toggle>
           </q-td>
         </q-tr>
@@ -71,62 +75,70 @@
 import {
   defineComponent,
   ref,
-  unref,
+  // unref,
   computed,
-  getCurrentInstance,
+  // getCurrentInstance,
   onMounted,
-} from "vue";
-import { useQuasar, Dialog } from "quasar";
-import { i18n } from "boot/i18n.js";
+} from 'vue'
+import { Dialog } from 'quasar'
+import { i18n } from 'boot/i18n.js'
 import { getAll, activateUser } from 'src/api/user'
 export default defineComponent({
-  name: "UserManagementPage",
+  name: 'UserManagementPage',
   setup() {
-    const $t = i18n.global.t;
-    const $q = useQuasar();
+    const $t = i18n.global.t
+    // const $q = useQuasar();
     const filter = ref('')
     const value = ref(true)
-    const visibleColumns = ref([ 'email', 'name','role', 'activate'])
+    const visibleColumns = ref(['email', 'name', 'role', 'activate'])
     const columns = computed(() => [
       {
         name: 'id',
         required: true,
         label: 'Id',
         align: 'left',
-        field: row => row.id,
-        format: val => `${val}`,
+        field: (row) => row.id,
+        format: (val) => `${val}`,
       },
       { name: 'email', align: 'center', label: $t('Email'), field: 'email', sortable: true },
       { name: 'name', align: 'center', label: $t('Name'), field: 'name', sortable: true },
       { name: 'role', align: 'center', label: $t('Role'), field: 'role', sortable: true },
-      { name: 'activate', align: 'center', label: $t('Activate'), field: 'activate', sortable: true },
+      {
+        name: 'activate',
+        align: 'center',
+        label: $t('Activate'),
+        field: 'activate',
+        sortable: true,
+      },
     ])
     const toggle = async (row) => {
       Dialog.create({
         class: 'deleteWarningClass',
         title: $t('Warning'),
-         message:
-           !row.activate ?
-             `${$t('Deactivate user')}  ${row.email}?`:
-             `${$t('Activate user')}  ${row.email}?`,
+        message: !row.activate
+          ? `${$t('Deactivate user')}  ${row.email}?`
+          : `${$t('Activate user')}  ${row.email}?`,
         ok: {
-          push: true
+          push: true,
         },
         cancel: {
           push: true,
-          color: 'negative'
+          color: 'negative',
         },
-        persistent: true
-      }).onOk(async() => {
-        const response = await activateUser(row)
-      }).onCancel(() => {
-        row.activate = !row.activate
-      }).onDismiss(() => {
+        persistent: true,
       })
+        .onOk(async () => {
+          const response = await activateUser(row)
+          console.log(response)
+        })
+        .onCancel(() => {
+          row.activate = !row.activate
+        })
+        .onDismiss(() => {})
     }
-    const getAllUser = async() => {
+    const getAllUser = async () => {
       const response = await getAll()
-        return response
+      return response
     }
     const rows = ref([])
     onMounted(async () => {
@@ -142,16 +154,16 @@ export default defineComponent({
       rows,
       toggle,
     }
-  }
+  },
 })
 </script>
 <style lang="scss">
 .deleteWarningClass {
   .q-dialog__title {
     color: orange;
-  
+
     &::before {
-      content: "\26A0";
+      content: '\26A0';
     }
   }
 }
