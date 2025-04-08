@@ -12,12 +12,7 @@
     v-slot="scope"
   >
     <q-input v-model="scope.value.name" dense autofocus :label="$t('Name')" />
-    <q-input
-      v-model="scope.value.properties"
-      dense
-      autofocus
-      :label="$t('Description')"
-    />
+    <q-input v-model="scope.value.properties" dense autofocus :label="$t('Description')" />
   </q-popup-edit>
 </template>
 
@@ -26,64 +21,66 @@ import {
   defineComponent,
   ref,
   unref,
-  getCurrentInstance,
-  onMounted,
+  // getCurrentInstance,
+  // onMounted,
   computed,
-} from "vue";
-import { useQuasar } from "quasar";
-import { i18n } from "boot/i18n.js";
+} from 'vue'
+// import { useQuasar } from "quasar";
+import { i18n } from 'boot/i18n.js'
 import { createFeature, updateFeature } from 'src/api/feature'
 export default defineComponent({
-  name: "PopupLocation",
+  name: 'PopupLocation',
   props: {
     row: Object,
     featureRows: Array,
     layer: Object,
   },
   setup(props, { emit }) {
-    console.log("🚀 ~ setup ~ props:", props.row)
-    
-    const vm = getCurrentInstance().proxy;
-    const $q = useQuasar();
-    const $t = i18n.global.t;
-    const computedRow = ref(props.row);
+    console.log('🚀 ~ setup ~ props:', props.row)
+
+    // const vm = getCurrentInstance().proxy;
+    // const $q = useQuasar();
+    console.log('emit', emit)
+    const $t = i18n.global.t
+    const computedRow = ref(props.row)
     const title = computed(() => {
-      return props.row.id ? `${$t('Update feature')}: ${unref(computedRow).name}`: `${$t('Add feature')}:`
+      return props.row.id
+        ? `${$t('Update feature')}: ${unref(computedRow).name}`
+        : `${$t('Add feature')}:`
     })
     const saveEdit = async (value, _props) => {
       const updateParams = {
         id: value.id,
         layerId: props.layer?.id,
-      };
-      if (value.name !== _props.name) updateParams.name = value.name;
-      if (value.properties !== _props.properties)
-        updateParams.properties = value.properties;
+      }
+      if (value.name !== _props.name) updateParams.name = value.name
+      if (value.properties !== _props.properties) updateParams.properties = value.properties
       if (updateParams.id) {
-        const response = await updateFeature(updateParams);
-        const currentRow = props.featureRows.find(
-          (row) => row.id === response.id
-        );
-        Object.assign(currentRow, { ...response });
-        return;
+        const response = await updateFeature(updateParams)
+        const currentRow = props.featureRows.find((row) => row.id === response.id)
+        Object.assign(currentRow, { ...response })
+        return
       } else {
         delete updateParams.id
         const response = await createFeature({
           features: [updateParams],
           layerId: props.layer?.id,
         })
+        console.log('response', response)
       }
-    };
+    }
     const updateModel = (val) => {
-    };
+      console.log(val)
+    }
 
     return {
       title,
       computedRow,
       saveEdit,
       updateModel,
-    };
+    }
   },
-});
+})
 </script>
 <style lang="scss">
 .popupEdit {

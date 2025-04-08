@@ -14,7 +14,15 @@ export default [
      *
      * ESLint requires "ignores" key to be the only one in this object
      */
-    // ignores: []
+    ignores: [
+      '/dist',
+      '/src-capacitor',
+      '/src-cordova',
+      '/.quasar',
+      '/node_modules',
+      '.eslintrc.js',
+      'eslint.config.js',
+    ],
   },
 
   ...pluginQuasar.configs.recommended(),

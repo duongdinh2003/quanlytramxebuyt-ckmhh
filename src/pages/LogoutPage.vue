@@ -5,18 +5,16 @@
 <script>
 import {
   defineComponent,
-  ref,
-  unref,
-  onMounted,
-  getCurrentInstance,
-  h,
-  render,
-  createApp,
-} from "vue";
+  // ref,
+  // unref,
+  // onMounted,
+  // getCurrentInstance,
+  // h,
+  // render,
+  // createApp,
+} from 'vue'
 export default defineComponent({
-  name: "LogoutPage",
-  setup() {
-
-  }
+  name: 'LogoutPage',
+  setup() {},
 })
 </script>
