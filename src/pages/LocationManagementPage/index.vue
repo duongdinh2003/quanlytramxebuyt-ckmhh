@@ -26,9 +26,7 @@
           style="min-width: 150px"
         />
         <q-btn rounded color="primary" icon="add" style="margin-left: 10px">
-          <q-tooltip anchor="center right" self="center start">{{
-            $t("Add location")
-          }}</q-tooltip>
+          <q-tooltip anchor="center right" self="center start">{{ $t('Add location') }}</q-tooltip>
           <PopupLocation
             v-model:row="newLocation"
             :location-rows="locationRows"
@@ -40,7 +38,13 @@
         <!-- <q-btn color="primary" icon="sync" @click="onSyncWorkspace">
           <q-tooltip>{{ $t('synchronized data from geoserver') }}</q-tooltip>
         </q-btn> -->
-        <q-input :label="$t('Search for location')" debounce="300" color="primary" v-model="locationFilter" @update:model-value="getAll()">
+        <q-input
+          :label="$t('Search for location')"
+          debounce="300"
+          color="primary"
+          v-model="locationFilter"
+          @update:model-value="getAll()"
+        >
           <template v-slot:append>
             <q-icon name="search" />
           </template>
@@ -48,18 +52,10 @@
       </template>
       <template v-slot:body="propsLocation">
         <q-tr :props="propsLocation">
-          <q-td
-            v-for="_key in ['id', 'name', 'description']"
-            :key="_key"
-            :props="propsLocation"
-          >
+          <q-td v-for="_key in ['id', 'name', 'description']" :key="_key" :props="propsLocation">
             {{ propsLocation.row[_key] }}
           </q-td>
-          <q-td
-            v-for="_key in ['longitude', 'latitude']"
-            :key="_key"
-            :props="propsLocation"
-          >
+          <q-td v-for="_key in ['longitude', 'latitude']" :key="_key" :props="propsLocation">
             {{ propsLocation.row?.view?.[_key] }}
           </q-td>
           <q-td key="workspace" :props="propsLocation">
@@ -76,11 +72,7 @@
             />
           </q-td>
           <q-td key="action" :props="propsLocation">
-            <q-btn
-              v-bind="actionButtonProps"
-              icon="edit"
-              style="margin-right: 10px"
-            >
+            <q-btn v-bind="actionButtonProps" icon="edit" style="margin-right: 10px">
               <!-- popup location edit -->
               <PopupLocation
                 v-model:row="propsLocation.row"
@@ -100,7 +92,7 @@
         <q-tr v-show="propsLocation.expand" :props="propsLocation">
           <q-td colspan="100%" v-if="propsLocation.expand">
             <!-- layer table -->
-            <TableLayer :props-location="propsLocation.row"/>
+            <TableLayer :props-location="propsLocation.row" />
           </q-td>
         </q-tr>
       </template>
@@ -122,169 +114,169 @@
 </template>
 
 <script>
-import {
-  defineComponent,
-  ref,
-  unref,
-  getCurrentInstance,
-  onMounted,
-  computed,
-} from "vue";
-import { useQuasar } from "quasar";
-import { i18n } from "boot/i18n.js";
+import { defineComponent, ref, unref, getCurrentInstance, onMounted, computed } from 'vue'
+// import { useQuasar } from "quasar";
+import { i18n } from 'boot/i18n.js'
 import {
   deleteLocation,
   getAllLocation,
-  updateLocation,
-  addLocaction,
-} from "src/api/location";
-import { getAllProjection } from "src/api/projection";
-import { getWorkspace, syncWorkspace } from "src/api/workspace";
-import PopupLocation from "src/pages/LocationManagementPage/components/popupLocation.vue";
-import TableLayer from "src/pages/LocationManagementPage/components/tableLayer.vue";
+  // updateLocation,
+  // addLocaction,
+} from 'src/api/location'
+import { getAllProjection } from 'src/api/projection'
+import { getWorkspace, syncWorkspace } from 'src/api/workspace'
+import PopupLocation from 'src/pages/LocationManagementPage/components/popupLocation.vue'
+import TableLayer from 'src/pages/LocationManagementPage/components/tableLayer.vue'
 export default defineComponent({
-  name: "LocationManagementPage",
+  name: 'LocationManagementPage',
   components: {
     PopupLocation,
     TableLayer,
   },
   setup() {
-    const vm = getCurrentInstance().proxy;
-    const $q = useQuasar();
-    const $t = i18n.global.t;
+    const vm = getCurrentInstance().proxy
+    // const $q = useQuasar();
+    const $t = i18n.global.t
     // deprecated for synchronize with command instead
     const onSyncWorkspace = async () => {
       await syncWorkspace({
-        workspaces: unref(workspaces).map((sp) => sp.name)
+        workspaces: unref(workspaces).map((sp) => sp.name),
       })
     }
     const actionButtonProps = {
-      size: "sm",
-      color: "primary",
+      size: 'sm',
+      color: 'primary',
       round: true,
       dense: true,
-    };
+    }
     const tableProps = {
       flat: true,
       bordered: true,
-      "wrap-cells": true,
-      "hide-pagination": true,
-      "row-key": "name",
-    };
-    const locationFilter = ref("");
+      'wrap-cells': true,
+      'hide-pagination': true,
+      'row-key': 'name',
+    }
+    const locationFilter = ref('')
     const visibleLocationColumns = ref([
-      "name",
-      "description",
-      "longitude",
-      "latitude",
-      "workspace",
-      "projection",
-      "layer",
-      "action",
-    ]);
+      'name',
+      'description',
+      'longitude',
+      'latitude',
+      'workspace',
+      'projection',
+      'layer',
+      'action',
+    ])
     const locationColumns = computed(() => [
       {
-        name: "id",
+        name: 'id',
         required: true,
-        label: "Id",
-        align: "left",
-        field: "id",
-        style: "min-width: 90px; width: 90px",
+        label: 'Id',
+        align: 'left',
+        field: 'id',
+        style: 'min-width: 90px; width: 90px',
       },
       {
-        name: "name",
-        align: "center",
-        label: $t("Name"),
-        field: "name",
+        name: 'name',
+        align: 'center',
+        label: $t('Name'),
+        field: 'name',
       },
       {
-        name: "description",
-        align: "center",
-        label: $t("Description"),
-        field: "description",
-        style: "min-witdh: 300px; max-width: 400px; width: 400px",
+        name: 'description',
+        align: 'center',
+        label: $t('Description'),
+        field: 'description',
+        style: 'min-witdh: 300px; max-width: 400px; width: 400px',
       },
       {
-        name: "longitude",
-        align: "center",
-        label: $t("Longitude"),
-        field: "longitude",
+        name: 'longitude',
+        align: 'center',
+        label: $t('Longitude'),
+        field: 'longitude',
         sortable: true,
       },
       {
-        name: "latitude",
-        align: "center",
-        label: $t("Latitude"),
-        field: "latitude",
+        name: 'latitude',
+        align: 'center',
+        label: $t('Latitude'),
+        field: 'latitude',
         sortable: true,
       },
       {
-        name: "workspace",
-        align: "center",
-        label: $t("Workspace"),
-        field: "workspace",
+        name: 'workspace',
+        align: 'center',
+        label: $t('Workspace'),
+        field: 'workspace',
       },
       {
-        name: "projection",
-        align: "center",
-        label: $t("Projection"),
-        field: "projection",
+        name: 'projection',
+        align: 'center',
+        label: $t('Projection'),
+        field: 'projection',
         sortable: true,
       },
       {
-        name: "layer",
-        align: "center",
-        label: $t("Layers"),
-        field: "mapLayers",
+        name: 'layer',
+        align: 'center',
+        label: $t('Layers'),
+        field: 'mapLayers',
       },
       {
-        name: "action",
-        align: "center",
-        label: $t("Action"),
+        name: 'action',
+        align: 'center',
+        label: $t('Action'),
       },
-    ]);
+    ])
     const locationPagination = ref({
       page: 1,
       rowsPerPage: 10,
       rowsNumber: 0,
-    });
+    })
     const onDeleteLocation = async (row) => {
       const resolve = async () => {
-        await getAll();
-      };
-      const res = await deleteLocation(row, resolve);
-    };
-    const scrollTable = ref(null);
-    const currentPopupRef = ref(null);
-    const showPopup = (ref) => {
-      currentPopupRef.value = ref;
-      if (unref(scrollTable)) {
-        scrollTable.value.removeEventListener("scroll", () => {
-          if (unref(currentPopupRef)) vm.$refs[unref(currentPopupRef)].hide();
-        });
+        await getAll()
       }
-      scrollTable.value = document.querySelector(
-        "div.q-table__middle.q-virtual-scroll"
-      );
-      scrollTable.value.addEventListener("scroll", () => {
-        if (unref(currentPopupRef)) vm.$refs[unref(currentPopupRef)].hide();
-      });
-    };
+      const res = await deleteLocation(row, resolve)
+      if (res) {
+        vm.$q.notify({
+          type: 'positive',
+          message: $t('Delete location successfully'),
+        })
+      } else {
+        vm.$q.notify({
+          type: 'negative',
+          message: $t('Delete location failed'),
+        })
+      }
+    }
+    const scrollTable = ref(null)
+    const currentPopupRef = ref(null)
+    const showPopup = (ref) => {
+      currentPopupRef.value = ref
+      if (unref(scrollTable)) {
+        scrollTable.value.removeEventListener('scroll', () => {
+          if (unref(currentPopupRef)) vm.$refs[unref(currentPopupRef)].hide()
+        })
+      }
+      scrollTable.value = document.querySelector('div.q-table__middle.q-virtual-scroll')
+      scrollTable.value.addEventListener('scroll', () => {
+        if (unref(currentPopupRef)) vm.$refs[unref(currentPopupRef)].hide()
+      })
+    }
 
     const getAll = async (val) => {
       const query = {
         page: val ? val : unref(locationPagination).page,
         per_page: unref(locationPagination).rowsPerPage,
         search: unref(locationFilter),
-      };
-      const response = await getAllLocation(query);
-      locationRows.value = response.data;
-      locationPagination.value.page = response.page;
-      locationPagination.value.rowsPerPage = response.per_page;
-      locationPagination.value.rowsNumber = parseInt(
-        Math.ceil(response.count / response.per_page)
-      );
-    };
+      }
+      const response = await getAllLocation(query)
+      locationRows.value = response.data
+      locationPagination.value.page = response.page
+      locationPagination.value.rowsPerPage = response.per_page
+      locationPagination.value.rowsNumber = parseInt(Math.ceil(response.count / response.per_page))
+    }
     const newLocation = ref({
       name: null,
       description: null,
@@ -295,25 +287,28 @@ export default defineComponent({
           name: null,
         },
       },
-    });
-    const locationRows = ref([]);
-    const projections = ref([]);
-    const workspaces = ref([]);
+    })
+    const locationRows = ref([])
+    const projections = ref([])
+    const workspaces = ref([])
     onMounted(() => {
-      getAll();
+      getAll()
       getAllProjection()
         .then((response) => {
-          projections.value = response.data;
+          projections.value = response.data
         })
         .catch(() => {
-          projections.value = [];
-        });
-      getWorkspace().then((response) => {
-        workspaces.value = response?.workspaces?.workspace || response?.workspace || response?.workspaces
-      }).catch(() => {
-        workspaces.value = [];
-      })
-    });
+          projections.value = []
+        })
+      getWorkspace()
+        .then((response) => {
+          workspaces.value =
+            response?.workspaces?.workspace || response?.workspace || response?.workspaces
+        })
+        .catch(() => {
+          workspaces.value = []
+        })
+    })
 
     return {
       tableProps,
@@ -331,9 +326,9 @@ export default defineComponent({
       projections,
       workspaces,
       onSyncWorkspace,
-    };
+    }
   },
-});
+})
 </script>
 <style lang="scss" scoped>
 .tableLocationClass {
@@ -367,7 +362,7 @@ export default defineComponent({
     color: orange !important;
 
     &::before {
-      content: "\26A0" !important;
+      content: '\26A0' !important;
     }
   }
 }

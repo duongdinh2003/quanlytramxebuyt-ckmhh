@@ -204,6 +204,7 @@ export default {
       })
       res.json(data)
     } catch (e) {
+      console.log(e)
       res.status(400).json({ message: 'Cannot get features by given layerId!' })
     }
   },
@@ -238,6 +239,7 @@ export default {
       })
       res.json(response)
     } catch (e) {
+      console.log(e)
       res.status(400).json({ message: 'Feature delete attempt failed!' })
     }
   },

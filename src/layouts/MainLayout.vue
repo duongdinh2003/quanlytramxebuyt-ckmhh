@@ -1,28 +1,32 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
-      <q-toolbar>
-        <q-btn flat dense round icon="menu" @click="toggleLeftDrawer" />
-        <q-toolbar-title>WebGIS Trạm Xe Buýt Đà Nẵng</q-toolbar-title>
-      </q-toolbar>
-    </q-header>
+  <div>
+    <q-layout view="lHh Lpr lFf">
+      <q-header elevated>
+        <q-toolbar>
+          <q-btn flat dense round icon="menu" @click="toggleLeftDrawer" />
+          <q-toolbar-title>WebGIS Trạm Xe Buýt Đà Nẵng</q-toolbar-title>
+        </q-toolbar>
+      </q-header>
 
-    <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
-      <q-list>
-        <q-item-label header>Chức năng</q-item-label>
-        <q-item>
-          <q-item-section>
-            <p>Chào mừng bạn đến với WebGIS Đà Nẵng!</p>
-            <p>Bản đồ hiển thị thông tin các trạm xe buýt trong khu vực Thành Phố Đà Nẵng.</p>
-          </q-item-section>
-        </q-item>
-      </q-list>
-    </q-drawer>
+      <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
+        <q-list>
+          <q-item-label header>Chức năng</q-item-label>
+          <q-item>
+            <q-item-section>
+              <p>Chào mừng bạn đến với WebGIS Đà Nẵng!</p>
+              <p>Bản đồ hiển thị thông tin các trạm xe buýt trong khu vực Thành Phố Đà Nẵng.</p>
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </q-drawer>
 
-    <q-page-container>
-      <div id="map" class="map-container"></div>
-    </q-page-container>
-  </q-layout>
+      <q-page-container>
+        <div id="map" class="map-container">
+          <router-view />
+        </div>
+      </q-page-container>
+    </q-layout>
+  </div>
 </template>
 
 <script>

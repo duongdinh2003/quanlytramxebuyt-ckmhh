@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client'
-import pkg from 'lodash'
-const { update } = pkg
+// import pkg from 'lodash'
+// const { update } = pkg
+import { LAYER_TYPE } from '../constants/enum.js'
 
 const prisma = new PrismaClient()
 
@@ -32,7 +33,7 @@ export default {
           name: name || '',
           description: description || '',
           url: url || '',
-          type: type || LayerType.VECTOR_LAYER,
+          type: type || LAYER_TYPE.VECTOR_LAYER,
           locationId: locationId ? parseInt(locationId) : null,
         },
       })

@@ -11,6 +11,7 @@ export class BaseDataFeature {
    */
   setData(feature) {
     //Override me
+    this.location = feature.getGeometry().getCoordinates()
   }
 
   getDisplayHtml() {
@@ -216,7 +217,7 @@ export class RiverDataFeature extends BaseDataFeature {
   }
 }
 
-const convertToCorrectFormat = function (string) {
+export const convertToCorrectFormat = function (string) {
   return decodeURIComponent(escape(string))
 }
 

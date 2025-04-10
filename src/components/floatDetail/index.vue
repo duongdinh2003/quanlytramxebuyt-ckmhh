@@ -1,19 +1,39 @@
 <template>
   <q-page-sticky class="stickyClass" position="top-right" :offset="[10, 10]">
     <q-card class="my-card" flat bordered style="width: 400px">
-      <q-carousel swipeable animated v-model="slideImage" control-color="secondary" navigation infinite
-        ref="carousel" style="height: 200px">
+      <q-carousel
+        swipeable
+        animated
+        v-model="slideImage"
+        control-color="secondary"
+        navigation
+        infinite
+        ref="carousel"
+        style="height: 200px"
+      >
         <q-carousel-slide :name="1" :img-src="image" />
         <template v-slot:control>
           <q-carousel-control position="top-left" class="text-white rounded-borders">
-            <q-btn class="absolute shadow-2 closeClass" round color="white" text-color="black" icon="close" size="sm"
-              @click="closeCard" />
+            <q-btn
+              class="absolute shadow-2 closeClass"
+              round
+              color="white"
+              text-color="black"
+              icon="close"
+              size="sm"
+              @click="closeCard"
+            />
           </q-carousel-control>
         </template>
       </q-carousel>
       <q-card-section>
-        <q-btn fab color="primary" icon="place" class="absolute"
-          style="top: 0; right: 12px; transform: translateY(-50%)" />
+        <q-btn
+          fab
+          color="primary"
+          icon="place"
+          class="absolute"
+          style="top: 0; right: 12px; transform: translateY(-50%)"
+        />
 
         <div class="row no-wrap items-center">
           <span class="col text-h6 ellipsis" v-html="title"></span>
@@ -25,25 +45,46 @@
       </q-card-section>
 
       <q-card-section v-if="coordinate" class="q-pt-none">
-        <div class="text-subtitle1">
-          <q-icon name="place" /> {{ coordinate }}
-        </div>
+        <div class="text-subtitle1"><q-icon name="place" /> {{ coordinate }}</div>
       </q-card-section>
       <q-separator />
       <q-tabs v-model="detailTab" class="bg-secondary text-white">
-        <q-tab v-for="(tab, index) of detailTabList" :key="index" :label="tab.label" :name="tab.component" @click="() => {
-          tabExpanded = true;
-        }
-          " />
-        <q-btn flat dense :icon="tabExpanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'" style="height: 100%"
-          @click="tabExpanded = !tabExpanded" />
+        <q-tab
+          v-for="(tab, index) of detailTabList"
+          :key="index"
+          :label="tab.label"
+          :name="tab.component"
+          @click="
+            () => {
+              tabExpanded = true
+            }
+          "
+        />
+        <q-btn
+          flat
+          dense
+          :icon="tabExpanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
+          style="height: 100%"
+          @click="tabExpanded = !tabExpanded"
+        />
       </q-tabs>
       <q-separator />
       <q-slide-transition>
         <div v-show="tabExpanded">
-          <q-tab-panels v-model="detailTab" animated :keep-alive="true" class="shadow-10 rounded-borders">
+          <q-tab-panels
+            v-model="detailTab"
+            animated
+            :keep-alive="true"
+            class="shadow-10 rounded-borders"
+          >
             <q-tab-panel name="tab-fields" class="panelClass">
-                <detail-table :type="typeComputed" :id="id" :feature_type="feature_type" :content="content" @update:model-content="updateContent($event)" ></detail-table>
+              <detail-table
+                :type="typeComputed"
+                :id="id"
+                :feature_type="feature_type"
+                :content="content"
+                @update:model-content="updateContent($event)"
+              ></detail-table>
             </q-tab-panel>
           </q-tab-panels>
         </div>
@@ -56,30 +97,30 @@
 import {
   ref,
   unref,
-  onMounted,
+  // onMounted,
   defineComponent,
   getCurrentInstance,
   computed,
-  createApp,
-  h,
+  // createApp,
+  // h,
   inject,
-} from "vue";
-import html2canvas from "html2canvas";
-import { QBtn } from "quasar";
-import { useQuasar } from "quasar";
-import { i18n } from "boot/i18n.js";
-import { Map, View, Overlay } from "ol";
-import { $bus } from "boot/bus.js";
+} from 'vue'
+// import html2canvas from "html2canvas";
+// import { QBtn } from "quasar";
+// import { useQuasar } from "quasar";
+import { i18n } from 'boot/i18n.js'
+// import { Map, View, Overlay } from "ol";
+import { $bus } from 'boot/bus.js'
 import _isEqual from 'lodash/isEqual'
-import { updateFeature } from "src/api/feature";
+// import { updateFeature } from "src/api/feature";
 
 import DetailTable from 'src/components/floatDetail/detailTable.vue'
-import { LAYER_TYPE, FEATURE_TYPE } from "src/constants/enum";
-import { useMapStore } from "stores/map";
-import { updateXML } from "src/utils/transactionXML";
+import { LAYER_TYPE, FEATURE_TYPE } from 'src/constants/enum'
+import { useMapStore } from 'stores/map'
+import { updateXML } from 'src/utils/transactionXML'
 
 export default defineComponent({
-  name: "FloatDetail",
+  name: 'FloatDetail',
   components: {
     'detail-table': DetailTable,
   },
@@ -98,7 +139,7 @@ export default defineComponent({
     },
     image: {
       type: String,
-      default: "https://cdn.quasar.dev/img/chicken-salad.jpg",
+      default: 'https://cdn.quasar.dev/img/chicken-salad.jpg',
     },
     distance: {
       type: Number,
@@ -110,34 +151,34 @@ export default defineComponent({
     },
   },
   setup(props, { emit }) {
-    const vm = getCurrentInstance().proxy;
-    const $q = useQuasar();
-    const mapStore = useMapStore();
-    const workspace = computed(() => mapStore.getLocation.workspace);
-    const $t = i18n.global.t;
-    const slideImage = ref(1);
+    const vm = getCurrentInstance().proxy
+    // const $q = useQuasar();
+    const mapStore = useMapStore()
+    const workspace = computed(() => mapStore.getLocation.workspace)
+    const $t = i18n.global.t
+    const slideImage = ref(1)
     const styleImage = computed(() => ({
       backgroundImage: `url(${props.image})`,
-      backgroundSize: "400px 200px",
-      height: "200px",
-    }));
-    const map = inject("map", {});
-    const detailTab = ref("tab-fields");
-    const tabExpanded = ref(true);
+      backgroundSize: '400px 200px',
+      height: '200px',
+    }))
+    const map = inject('map', {})
+    const detailTab = ref('tab-fields')
+    const tabExpanded = ref(true)
     const detailTabList = computed(() => [
       {
-        label: $t("Fields"),
-        component: "tab-fields",
+        label: $t('Fields'),
+        component: 'tab-fields',
         content: props.content,
       },
-    ]);
+    ])
     const closeCard = () => {
-      $bus.emit("close-float-detail", true);
-      emit("update:model-value", false);
-    };
+      $bus.emit('close-float-detail', true)
+      emit('update:model-value', false)
+    }
     const distanceToMyLocation = computed(() => {
-      return props.distance;
-    });
+      return props.distance
+    })
     const updateContent = async (content) => {
       if (!_isEqual(content, props.content)) {
         let _tempContent = content
@@ -147,7 +188,9 @@ export default defineComponent({
         if (props.id) {
           try {
             const feature = mapStore.getSelectedFeature.feature
-            const layer = mapStore.getSelectedFeature.layer.get("id").replace(`${unref(workspace)}:`, '')
+            const layer = mapStore.getSelectedFeature.layer
+              .get('id')
+              .replace(`${unref(workspace)}:`, '')
             feature.setProperties(_tempContent)
             updateXML({ workspace: unref(workspace), layer, feature })
             // const response = await updateFeature({
@@ -160,7 +203,7 @@ export default defineComponent({
             console.log(e)
           }
         }
-        emit("update:model-content", content)
+        emit('update:model-content', content)
       }
     }
 
@@ -175,10 +218,10 @@ export default defineComponent({
       distanceToMyLocation,
       closeCard,
       updateContent,
-      typeComputed: computed(() => props.type)
-    };
+      typeComputed: computed(() => props.type),
+    }
   },
-});
+})
 </script>
 <style lang="scss" scoped>
 html,
@@ -229,9 +272,8 @@ body {
 }
 
 .my-card {
-  .q-carousel__navigation-inner{
+  .q-carousel__navigation-inner {
     display: none !important;
   }
 }
-  
 </style>

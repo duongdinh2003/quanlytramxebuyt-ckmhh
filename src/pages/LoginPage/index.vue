@@ -66,7 +66,6 @@
 <script>
 import { defineComponent, getCurrentInstance, ref, unref } from 'vue'
 import { decodeCredential } from 'vue3-google-login'
-import GoogleLogin from 'vue3-google-login'
 // import { login } from 'src/api/user'
 import { useUserStore } from 'stores/user'
 // import { login } from 'src/api/user'
@@ -89,9 +88,6 @@ picture:""
 sub:"" */
 export default defineComponent({
   name: 'LoginPage',
-  components: {
-    GoogleLogin,
-  },
   setup() {
     const vm = getCurrentInstance().proxy
     const router = useRouter()

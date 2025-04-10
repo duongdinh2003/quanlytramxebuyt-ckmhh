@@ -1,8 +1,15 @@
 const routes = [
   {
-    path: '',
+    path: '/',
     component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '/map', component: () => import('pages/IndexPage.vue'), name: 'HomePage' }],
+    children: [
+      {
+        path: '',
+        component: () => import('pages/IndexPage.vue'),
+        name: 'HomePage',
+        meta: { public: true },
+      },
+    ],
   },
 
   // Always leave this as last one,

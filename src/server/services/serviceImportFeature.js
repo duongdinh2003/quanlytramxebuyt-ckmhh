@@ -10,6 +10,7 @@ const prisma = new PrismaClient()
 export default {
   updateFeature: async (req, res) => {
     const { name, workspace } = req.params
+    console.log('name', name)
     const mapLayers = await prisma.mapLayer.findMany({
       select: {
         url: true,

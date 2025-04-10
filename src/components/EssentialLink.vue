@@ -64,6 +64,7 @@ const props = defineProps({
     default: '',
   },
 })
+console.log('EssentialLink', props)
 </script>
 <style lang="scss">
 .q-expansion-item__container {
