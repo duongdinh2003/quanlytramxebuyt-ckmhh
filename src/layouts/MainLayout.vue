@@ -9,15 +9,8 @@
       </q-header>
 
       <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
-        <q-list>
-          <q-item-label header>Chức năng</q-item-label>
-          <q-item>
-            <q-item-section>
-              <p>Chào mừng bạn đến với WebGIS Đà Nẵng!</p>
-              <p>Bản đồ hiển thị thông tin các trạm xe buýt trong khu vực Thành Phố Đà Nẵng.</p>
-            </q-item-section>
-          </q-item>
-        </q-list>
+        <!-- Hú hú khẹc khẹc -->
+        <ItemsSection />
       </q-drawer>
 
       <q-page-container>
@@ -33,9 +26,13 @@
 import { ref, onMounted } from 'vue'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import ItemsSection from './components/ItemsSection.vue'
 
 export default {
   name: 'MainLayout',
+  components: {
+    ItemsSection,
+  },
   setup() {
     const leftDrawerOpen = ref(true)
     let map
@@ -60,15 +57,15 @@ export default {
       })
 
       // Định nghĩa các lớp phủ (overlay layers)
-      const vietnamBoundary = L.tileLayer.wms('http://localhost:8080/geoserver/Bus_Stop/wms', {
-        layers: 'Bus_Stop:vnm___gadm41_vnm_1',
+      const vietnamBoundary = L.tileLayer.wms('http://localhost:8081/geoserver/Bus_Stop/wms', {
+        layers: 'Bus_Stop:mapvn_hashed',
         format: 'image/png',
         transparent: true,
         opacity: 1.0,
       })
 
-      const danangBoundary = L.tileLayer.wms('http://localhost:8080/geoserver/Bus_Stop/wms', {
-        layers: 'Bus_Stop:da_nang___gadm41_vnm_1',
+      const danangBoundary = L.tileLayer.wms('http://localhost:8081/geoserver/Bus_Stop/wms', {
+        layers: 'Bus_Stop:mapdn',
         format: 'image/png',
         transparent: true,
         opacity: 1.0,
@@ -84,12 +81,15 @@ export default {
       const busStopsLayer = L.geoJSON(null, {
         pointToLayer: (feature, latlng) => L.marker(latlng, { icon: busStopIcon }),
         onEachFeature: (feature, layer) =>
-          layer.bindPopup(`Địa chỉ trạm: ${feature.properties.name}`),
+          layer.bindPopup(
+            `Địa chỉ trạm: ${feature.properties.name}
+             Địa chỉ trạm: ${feature.properties.name}`,
+          ),
       })
 
       // Tải dữ liệu trạm xe buýt từ WFS
       fetch(
-        'http://localhost:8080/geoserver/Bus_Stop/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=Bus_Stop:bus_stops_da_nang&maxFeatures=1000&outputFormat=application/json',
+        'http://localhost:8081/geoserver/Bus_Stop/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=Bus_Stop%3Ahighway_bus_stop__a_nang&maxFeatures=1000&outputFormat=application%2Fjson',
       )
         .then((response) => response.json())
         .then((data) => {
