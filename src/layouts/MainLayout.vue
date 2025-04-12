@@ -61,14 +61,14 @@ export default {
 
       // Định nghĩa các lớp phủ (overlay layers)
       const vietnamBoundary = L.tileLayer.wms('http://localhost:8080/geoserver/Bus_Stop/wms', {
-        layers: 'Bus_Stop:vnm___gadm41_vnm_1',
+        layers: 'Bus_Stop:mapvn_hashed',
         format: 'image/png',
         transparent: true,
         opacity: 1.0,
       })
 
       const danangBoundary = L.tileLayer.wms('http://localhost:8080/geoserver/Bus_Stop/wms', {
-        layers: 'Bus_Stop:da_nang___gadm41_vnm_1',
+        layers: 'Bus_Stop:mapdn',
         format: 'image/png',
         transparent: true,
         opacity: 1.0,
@@ -89,7 +89,7 @@ export default {
 
       // Tải dữ liệu trạm xe buýt từ WFS
       fetch(
-        'http://localhost:8080/geoserver/Bus_Stop/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=Bus_Stop:bus_stops_da_nang&maxFeatures=1000&outputFormat=application/json',
+        'http://localhost:8080/geoserver/Bus_Stop/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=Bus_Stop:bus_stops_da_nang&maxFeatures=1000&outputFormat=application%2Fjson',
       )
         .then((response) => response.json())
         .then((data) => {
