@@ -295,12 +295,11 @@ export default {
         const id = editingBusStop.value.properties.id
         const payload = {
           name: editingBusStop.value.properties.name,
+          description: editingBusStop.value.properties.description || null,
           geom: {
             type: 'Point',
             coordinates: [editingPosition.value.lng, editingPosition.value.lat],
           },
-          description: editingBusStop.value.properties.description || null,
-          image: editingBusStop.value.properties.image || null,
         }
 
         const response = await fetch(`http://localhost:3000/api/bus-stop/${id}`, {
@@ -364,42 +363,12 @@ export default {
         }
 
         const data = await response.json()
-        console.log('Raw data from API:', data)
 
         // Clear existing bus stops
         busStopsLayer.clearLayers()
 
-        // Chuyển đổi dữ liệu thành định dạng GeoJSON
-        if (Array.isArray(data)) {
-          const geoJsonData = {
-            type: 'FeatureCollection',
-            features: data.map((stop) => ({
-              type: 'Feature',
-              geometry: {
-                type: 'Point',
-                coordinates: [stop.lng, stop.lat],
-              },
-              properties: {
-                id: stop.id,
-                name: stop.name,
-                description: stop.description || '',
-                image: stop.image,
-              },
-            })),
-          }
-
-          console.log('Converted GeoJSON:', geoJsonData)
-          busStopsLayer.addData(geoJsonData)
-
-          // Kiểm tra xem có layer nào được thêm vào không
-          let count = 0
-          busStopsLayer.eachLayer(() => {
-            count++
-          })
-          console.log(`Added ${count} bus stops to the map`)
-        } else {
-          console.error('Data is not an array:', data)
-        }
+        // Add new data
+        busStopsLayer.addData(data)
       } catch (error) {
         console.error('Error fetching bus stops:', error)
         searchError.value = `Lỗi tải dữ liệu: ${error.message}`
