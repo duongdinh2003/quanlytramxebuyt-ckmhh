@@ -11,9 +11,9 @@
 
     <q-item clickable v-ripple to="/users">
       <q-item-section avatar>
-        <q-icon name="people" />
+        <q-icon name="add" />
       </q-item-section>
-      <q-item-section> Quản lý người dùng </q-item-section>
+      <q-item-section> Thêm địa điểm </q-item-section>
     </q-item>
 
     <q-item clickable v-ripple to="/settings">

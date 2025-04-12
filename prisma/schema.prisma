@@ -3,36 +3,62 @@
 
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["fullTextSearch", "fullTextIndex"]
+  // previewFeatures = ["fullTextSearch", "fullTextIndex"]
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 
-enum Role {
-  USER
-  ADMIN
-}
+// enum Role {
+//   USER
+//   ADMIN
+// }
 
-enum Gender {
-  MALE
-  FEMALE
-  OTHER
-}
+// enum Gender {
+//   MALE
+//   FEMALE
+//   OTHER
+// }
 
-model Users {
-  id       String   @id @default(uuid())
-  email    String   @unique
-  password String   @db.VarChar(32)
-  role     Role     @default(USER)
-  activate Boolean  @default(true)
+// model Users {
+//   id       String   @id @default(uuid())
+//   email    String   @unique
+//   password String   @db.VarChar(32)
+//   role     Role     @default(USER)
+//   activate Boolean  @default(true)
 
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt
+//   createdAt DateTime? @default(now())
+//   updatedAt DateTime? @updatedAt
 
-  @@fulltext([email])
-  @@fulltext([email, password])
+//   @@fulltext([email])
+//   @@fulltext([email, password])
+// }
+
+model BusStop {
+  id              Int      @id @default(autoincrement())
+  geom            Json
+  full_id         String?  @db.VarChar(254)
+  osm_id          String?  @db.VarChar(254)
+  osm_type        String?  @db.VarChar(254)
+  highway         String?  @db.VarChar(254)
+  description     String?  @db.VarChar(254) @map("description")
+  office          String?  @db.VarChar(254)
+  name_fr         String?  @db.VarChar(254)
+  network         String?  @db.VarChar(254)
+  name_de         String?  @db.VarChar(254)
+  name_en         String?  @db.VarChar(254)
+  amenity         String?  @db.VarChar(254)
+  name_ru         String?  @db.VarChar(254)
+  lit             String?  @db.VarChar(254)
+  bin             String?  @db.VarChar(254)
+  shelter         String?  @db.VarChar(254)
+  bench           String?  @db.VarChar(254)
+  covered         String?  @db.VarChar(254)
+  public_transport String? @db.VarChar(254) @map("public_tra")
+  name            String?  @db.VarChar(254)
+  bus             String?  @db.VarChar(254)
+  image             String?  @db.VarChar(254)
 }
