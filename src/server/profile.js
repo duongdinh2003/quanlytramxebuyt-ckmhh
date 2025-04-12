@@ -78,6 +78,18 @@ export default {
    */
   update: async (req, res) => {
     const { profile } = req.body
+
+    // Xử lý birthday
+    let birthdayValue = undefined
+    if (profile.birthday) {
+      // Kiểm tra nếu birthday là chuỗi, chuyển thành Date
+      birthdayValue = new Date(profile.birthday)
+
+      // Kiểm tra tính hợp lệ của ngày
+      if (isNaN(birthdayValue.getTime())) {
+        return res.status(400).json({ message: 'Invalid birthday format!' })
+      }
+    }
     try {
       const data = await prisma.profile.update({
         where: {
@@ -92,12 +104,54 @@ export default {
           picture: profile.picture || undefined,
           gender: profile.gender || undefined,
           address: profile.address || undefined,
-          birthday: profile.birthday || undefined,
+          birthday: birthdayValue,
         },
       })
       res.json(data)
     } catch {
       res.status(400).json({ message: 'Profile update attempt failed!' })
+    }
+  },
+  /**
+   * @swagger
+   * /api/profile/picture:
+   *   put:
+   *     tags:
+   *       - Profiles
+   *     summary: Upload a user profile picture
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         multipart/form-data:
+   *           schema:
+   *             $ref: '#/components/schemas/Profile'
+   *     responses:
+   *       200:
+   *         description: Profile picture updated successfully
+   *       404:
+   *         description: Profile not found
+   *       400:
+   *         description: Profile picture update attempt failed!
+   *       500:
+   *         description: Internal server error
+   */
+  updateProfilePicture: async (req, res) => {
+    try {
+      // req.file là thông tin file sau khi đã được xử lý bởi multer
+      if (!req.file) {
+        return res.status(400).json({ error: 'No file uploaded' })
+      }
+
+      // Tạo URL cho file đã upload
+      const fileUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`
+
+      // Trả về URL của file để frontend có thể cập nhật vào profile
+      res.status(200).json({
+        success: true,
+        imageUrl: fileUrl,
+      })
+    } catch {
+      res.status(400).json({ message: 'Profile picture update attempt failed!' })
     }
   },
   /**
@@ -113,7 +167,7 @@ export default {
    */
   getAll: async (req, res) => {
     try {
-      const users = await prisma.user.findMany({
+      const users = await prisma.users.findMany({
         include: {
           profile: true,
         },

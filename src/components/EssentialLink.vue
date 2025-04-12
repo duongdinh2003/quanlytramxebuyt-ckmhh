@@ -42,29 +42,65 @@
   </q-expansion-item>
 </template>
 
-<script setup>
-const props = defineProps({
-  title: {
-    type: String,
-    required: true,
-  },
+<script>
+import { defineComponent, ref, unref, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { i18n } from 'boot/i18n.js'
 
-  caption: {
-    type: String,
-    default: '',
-  },
+export default defineComponent({
+  name: 'EssentialLink',
+  props: {
+    title: {
+      type: String,
+      required: true,
+    },
 
-  link: {
-    type: String,
-    default: '#',
+    caption: {
+      type: String,
+      default: '',
+    },
+    link: {
+      type: String,
+      default: null,
+    },
+    to: {
+      type: String,
+      default: '',
+    },
+    action: {
+      type: Function,
+      default: null,
+    },
+    show: {
+      type: Boolean,
+      default: true,
+    },
+    icon: {
+      type: String,
+      default: '',
+    },
   },
-
-  icon: {
-    type: String,
-    default: '',
+  setup() {
+    const { locale } = useI18n({ useScope: 'global' })
+    const $t = i18n.global.t
+    const leftDrawerOpen = ref(false)
+    const localeOptions = computed(() => [
+      { value: 'en-US', label: $t('English') },
+      { value: 'vn-VN', label: $t('Vietnamese') },
+    ])
+    const languageRef = ref(null)
+    const blur = () => {
+      unref(languageRef).blur()
+    }
+    return {
+      languageRef,
+      blur,
+      locale,
+      localeOptions,
+      leftDrawerOpen,
+    }
   },
 })
-console.log('EssentialLink', props)
 </script>
 <style lang="scss">
 .q-expansion-item__container {

@@ -155,10 +155,12 @@
 import { ref, onMounted, computed } from 'vue'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import { i18n } from 'boot/i18n.js'
 
 export default {
   name: 'MainLayout',
   setup() {
+    const $t = i18n.global.t
     const leftDrawerOpen = ref(true)
     const searchBusStopName = ref('')
     const searchResults = ref([])
@@ -421,20 +423,20 @@ export default {
         onEachFeature: (feature, layer) => {
           const props = feature.properties
           layer.bindPopup(`
-                <b>Tên trạm xe:</b> ${props.name || 'Không có tên'}<br>
-                <b>Mô tả:</b> ${props.description || 'Không có mô tả'}<br>
+                <b>${$t('Bus stop name')}:</b> ${props.name || $t('No name')}<br>
+                <b>Mô tả:</b> ${props.description || $t('No description')}<br>
                 <div style="margin-top: 10px;">
-                  <button 
+                  <button
                     onclick="document.dispatchEvent(new CustomEvent('edit-bus-stop', {detail: ${props.id}}))"
                     style="background-color: #1976D2; color: white; border: none; padding: 5px 10px; margin-right: 5px; cursor: pointer;"
                   >
-                    Sửa
+                    ${$t('Edit')}
                   </button>
-                  <button 
+                  <button
                     onclick="document.dispatchEvent(new CustomEvent('delete-bus-stop', {detail: ${props.id}}))"
                     style="background-color: #C10015; color: white; border: none; padding: 5px 10px; cursor: pointer;"
                   >
-                    Xóa
+                    ${$t('Delete')}
                   </button>
                 </div>
               `)

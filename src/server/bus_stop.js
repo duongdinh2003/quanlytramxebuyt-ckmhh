@@ -25,7 +25,7 @@ export default {
         lat: row.geometry.coordinates[1],
       }))
 
-      console.log(formatted)
+      // console.log(formatted)
 
       res.json(formatted)
     } catch (error) {
@@ -124,7 +124,7 @@ export default {
 
     try {
       const bus_stop = await prisma.$queryRaw`
-        UPDATE bus_stop
+        UPDATE "BusStop"
         SET
           name = COALESCE(${name}, name),
           geom = COALESCE(${latitude && longitude ? `ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326)` : null}, geom),
