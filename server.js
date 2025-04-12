@@ -1,10 +1,11 @@
 import 'dotenv/config'
-// server.js
-import workspaceAPI from './src/server/services/workspace.js'
-import projectionAPI from './src/server/projection.js'
-import featureAPI from './src/server/feature.js'
+
 import userAPI from './src/server/user.js'
 import profileAPI from './src/server/profile.js'
+import busStopAPI from './src/server/bus_stop.js'
+import projectionAPI from './src/server/projection.js'
+import featureAPI from './src/server/feature.js'
+import workspaceAPI from './src/server/services/workspace.js'
 import mapLayerAPI from './src/server/mapLayer.js'
 import locationAPI from './src/server/location.js'
 import { upload } from './src/server/fileMiddleware.js'
@@ -20,6 +21,7 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 const app = express()
+
 app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
@@ -37,15 +39,22 @@ const options = {
     },
     servers: [
       {
-        url: `${process.env.BASE_HOST}:${process.env.API_PORT}`, // Update with your server URL
+        url: `${process.env.BASE_HOST}:${process.env.API_PORT}`,
       },
     ],
   },
-  apis: ['./src/server/*.js'], // Update with the path to your API files
+  apis: ['./src/server/*.js'],
 }
 
 const specs = swaggerJsdoc(options)
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs))
+
+// bus stop
+app.get('/api/bus-stop', busStopAPI.getAll)
+app.post('/api/bus-stop', busStopAPI.create)
+app.put('/api/bus-stop/:id', busStopAPI.update)
+app.get('/api/bus-stop/:name', busStopAPI.getByName)
+app.delete('/api/bus-stop/:id', busStopAPI.delete)
 
 // user
 app.get('/api/users/:id', userAPI.findUser)
@@ -57,6 +66,7 @@ app.put('/api/users/:id', userAPI.activateUser)
 app.post('/api/login', userAPI.login)
 app.post('/api/login-google', userAPI.loginGoogle)
 app.post('/api/register', userAPI.register)
+
 // profile
 app.get('/api/profile', userAPI.getAll)
 app.put('/api/profile/:id', profileAPI.update)
