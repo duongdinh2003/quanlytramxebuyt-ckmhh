@@ -28,6 +28,7 @@ export default {
     'Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character',
   Login: 'Login',
   Logout: 'Logout',
+  'Change Photo': 'Change Photo',
   //map
   'Back to world map': 'Back to world map',
   'Street map': 'Street map',
@@ -130,6 +131,9 @@ export default {
   'Phone Number': 'Phone Number',
   Address: 'Address',
   'Current Location': 'Current Location',
+  Male: 'Male',
+  Female: 'Female',
+  Other: 'Other',
   // operator
   EQUALS: 'EQUALS',
   'NOT EQUALS': 'NOT EQUALS',

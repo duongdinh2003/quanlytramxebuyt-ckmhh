@@ -7,15 +7,24 @@ import userAPI from './src/server/user.js'
 import profileAPI from './src/server/profile.js'
 import mapLayerAPI from './src/server/mapLayer.js'
 import locationAPI from './src/server/location.js'
+import { upload } from './src/server/fileMiddleware.js'
 import express from 'express'
 import cors from 'cors'
+import path from 'path'
+import { fileURLToPath } from 'url'
 
 // import { PrismaClient } from '@prisma/client'
 // const prisma = new PrismaClient()
 
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+
 const app = express()
 app.use(cors())
 app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
+
 import swaggerJsdoc from 'swagger-jsdoc'
 import swaggerUi from 'swagger-ui-express'
 const options = {
@@ -51,6 +60,7 @@ app.post('/api/register', userAPI.register)
 // profile
 app.get('/api/profile', userAPI.getAll)
 app.put('/api/profile/:id', profileAPI.update)
+app.post('/api/profile/picture', upload.single('picture'), profileAPI.updateProfilePicture)
 
 // mapLayer
 app.post('/api/mapLayers', mapLayerAPI.create)

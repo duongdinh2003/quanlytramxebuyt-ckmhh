@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import {login, loginGoogle, register} from 'src/api/user'
+import { login, loginGoogle, register } from 'src/api/user'
 
 export const useUserStore = defineStore('user', {
   state: () => ({
@@ -9,19 +9,19 @@ export const useUserStore = defineStore('user', {
   persist: true,
 
   getters: {
-    getUser (state) {
+    getUser(state) {
       return state.user
     },
-    getIsLogin (state) {
+    getIsLogin(state) {
       return state.isLogin
-    }
+    },
   },
 
   actions: {
     setProfile(profile) {
       this.user.profile = profile
     },
-    setUser (user) {
+    setUser(user) {
       this.user = user
     },
     clearUser() {
@@ -34,12 +34,11 @@ export const useUserStore = defineStore('user', {
         this.user = responseData
         this.isLogin = true
         return responseData
-      } catch (e){
+      } catch (e) {
         this.user = {}
         this.isLogin = false
         return e
       }
-
     },
     async loginGoogleUser(userData) {
       try {
@@ -50,13 +49,12 @@ export const useUserStore = defineStore('user', {
         })
         this.user = responseData
         this.isLogin = true
-       return responseData
+        return responseData
       } catch {
         this.user = {}
         this.isLogin = false
         return {}
       }
-
     },
 
     async registerUser(userData) {
@@ -74,7 +72,6 @@ export const useUserStore = defineStore('user', {
         this.isLogin = false
         return {}
       }
-
     },
-  }
+  },
 })

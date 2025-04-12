@@ -28,6 +28,7 @@ export default {
     'Tối thiểu tám ký tự, ít nhất một chữ hoa, một chữ thường, một số và một ký tự đặc biệt',
   Login: 'Đăng nhập',
   Logout: 'Đăng xuất',
+  'Change Photo': 'Thay đổi ảnh đại diện',
   //map
   'Back to world map': 'Quay lại bản đồ thế giới',
   'Street map': 'Bản đồ đường phố',
@@ -130,6 +131,9 @@ export default {
   'Phone Number': 'Số điện thoại',
   Address: 'Địa chỉ',
   'Current Location': 'Nơi ở hiện tại',
+  Male: 'Nam',
+  Female: 'Nữ',
+  Other: 'Khác',
   // operator
   EQUALS: 'Bằng',
   'NOT EQUALS': 'Không bằng',

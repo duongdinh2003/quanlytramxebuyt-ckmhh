@@ -1,52 +1,128 @@
 <template>
-  <div>
-    <q-layout view="lHh Lpr lFf">
-      <q-header elevated>
-        <q-toolbar>
-          <q-btn flat dense round icon="menu" @click="toggleLeftDrawer" />
-          <q-toolbar-title>WebGIS Trạm Xe Buýt Đà Nẵng</q-toolbar-title>
-        </q-toolbar>
-      </q-header>
+  <q-layout view="hHh Lpr lFf">
+    <q-header elevated>
+      <q-toolbar>
+        <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
 
-      <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
-        <q-list>
-          <q-item-label header>Chức năng</q-item-label>
-          <q-item>
-            <q-item-section>
-              <p>Chào mừng bạn đến với WebGIS Đà Nẵng!</p>
-              <p>Bản đồ hiển thị thông tin các trạm xe buýt trong khu vực Thành Phố Đà Nẵng.</p>
-            </q-item-section>
-          </q-item>
-        </q-list>
-      </q-drawer>
+        <q-toolbar-title>WebGIS Trạm Xe Buýt Đà Nẵng</q-toolbar-title>
+        <q-avatar>
+          <img v-if="profile?.picture" :src="profile?.picture" alt="picture" />
+          <img v-else src="~assets/account.jpg" alt="picture" />
+        </q-avatar>
+      </q-toolbar>
+    </q-header>
+    <q-drawer v-model="leftDrawerOpen" show-if-above elevated side="left" behavior="desktop">
+      <q-list>
+        <EssentialLink v-for="link in essentialLinks" :key="link.title" v-bind="link" />
+        <q-separator />
+        <EssentialLink v-for="link in adminInteraction" :key="link.title" v-bind="link" />
+        <q-separator />
+        <EssentialLink v-for="link in userIntecraction" :key="link.title" v-bind="link" />
+      </q-list>
+    </q-drawer>
 
-      <q-page-container>
-        <div id="map" class="map-container">
-          <router-view />
-        </div>
-      </q-page-container>
-    </q-layout>
-  </div>
+    <q-page-container>
+      <div id="map" class="map-container" v-if="isMapRoute"></div>
+      <router-view v-else />
+    </q-page-container>
+  </q-layout>
 </template>
 
 <script>
-import { ref, onMounted } from 'vue'
+import { getCurrentInstance, defineComponent, ref, computed, onBeforeMount, watch } from 'vue'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import EssentialLink from 'components/EssentialLink.vue'
+import { i18n } from 'boot/i18n.js'
+import { useUserStore } from 'stores/user'
+import { useRoute, useRouter } from 'vue-router'
 
-export default {
+export default defineComponent({
   name: 'MainLayout',
-  setup() {
-    const leftDrawerOpen = ref(true)
-    let map
 
-    onMounted(() => {
+  components: {
+    EssentialLink,
+  },
+
+  setup() {
+    const vm = getCurrentInstance().proxy
+    const $t = i18n.global.t
+    const router = useRouter()
+    const route = useRoute()
+    const userStore = useUserStore()
+    const { role, profile } = userStore.getUser
+    const leftDrawerOpen = ref(true)
+    const miniState = ref(true)
+    const linksList = computed(() => [
+      {
+        title: $t('Map'),
+        icon: 'fa-sharp fa-solid fa-map-location-dot',
+        to: '/map',
+      },
+    ])
+    const adminInteraction = computed(() => [
+      {
+        title: $t('Users management'),
+        icon: 'fa-solid fa-users',
+        to: '/user-management',
+        show: role === 'ADMIN',
+      },
+    ])
+    const userIntecraction = computed(() => [
+      {
+        title: $t('Profile'),
+        icon: 'account_circle',
+        to: '/profile',
+      },
+      {
+        title: $t('Settings'),
+        icon: 'settings',
+      },
+      {
+        title: $t('Logout'),
+        icon: 'logout',
+        action: () => {
+          userStore.clearUser()
+          router.push({ name: 'LoginPage' })
+        },
+      },
+    ])
+    let map
+    const isMapRoute = computed(() => route.path === '/map')
+
+    onBeforeMount(() => {
+      if (route.path === '/') {
+        router.replace({ name: 'HomePage' })
+      }
+    })
+
+    // Theo dõi sự thay đổi của route và khởi tạo bản đồ khi cần
+    watch(
+      isMapRoute,
+      (newVal) => {
+        if (newVal) {
+          // Đợi một chút để DOM được cập nhật
+          setTimeout(() => {
+            initMap()
+          }, 100)
+        }
+      },
+      { immediate: true },
+    )
+
+    function initMap() {
+      if (!document.getElementById('map')) return
+
       // Khởi tạo bản đồ
       map = L.map('map', {
         center: [16.074, 108.224],
         zoom: 12,
+        zoomControl: false,
         layers: [], // Không thêm lớp mặc định ngay
       })
+
+      // Thêm zoomControl ở vị trí khác để tránh xung đột với drawer
+      L.control.zoom({ position: 'bottomright' }).addTo(map)
 
       // Định nghĩa các lớp nền (base layers)
       const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -118,12 +194,30 @@ export default {
 
       // Thêm bộ điều khiển lớp
       L.control.layers(baseLayers, overlayLayers).addTo(map)
-    })
+
+      // Đảm bảo map container có z-index phù hợp
+      document.getElementById('map').style.zIndex = '1'
+
+      // Đảm bảo drawer có z-index cao hơn
+      const drawer = document.querySelector('.q-drawer')
+      if (drawer) {
+        drawer.style.zIndex = '1000'
+      }
+    }
 
     return {
+      vm,
+      essentialLinks: linksList,
+      adminInteraction,
+      userIntecraction,
       leftDrawerOpen,
-      toggleLeftDrawer: () => (leftDrawerOpen.value = !leftDrawerOpen.value),
+      miniState,
+      profile,
+      toggleLeftDrawer() {
+        leftDrawerOpen.value = !leftDrawerOpen.value
+      },
+      isMapRoute,
     }
   },
-}
+})
 </script>

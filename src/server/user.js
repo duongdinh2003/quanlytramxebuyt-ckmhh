@@ -1,5 +1,6 @@
 import pkg from '@prisma/client'
 const { PrismaClient, Role } = pkg
+import bcrypt from 'bcryptjs'
 
 const prisma = new PrismaClient()
 
@@ -25,11 +26,13 @@ export default {
    */
   register: async (req, res) => {
     const { email, password, profile } = req.body
+    const salt = await bcrypt.genSalt(10)
+    const hashedPassword = await bcrypt.hash(password, salt)
     try {
-      const user = await prisma.user.create({
+      const user = await prisma.users.create({
         data: {
           email,
-          password: password || undefined,
+          password: hashedPassword || undefined,
           profile: {
             create: {
               sub: profile.sub || undefined,
@@ -73,7 +76,7 @@ export default {
   login: async (req, res) => {
     const { email, password } = req.body
     try {
-      const user = await prisma.user.findUnique({
+      const user = await prisma.users.findUnique({
         where: {
           email,
         },
@@ -81,7 +84,11 @@ export default {
           profile: true,
         },
       })
-      if (user?.password === password) {
+      if (!user['activate']) {
+        return res.status(400).json({ error: 'This account has been deactivated!' })
+      }
+      const passwordMatched = await bcrypt.compare(password, user?.password)
+      if (passwordMatched) {
         delete user['password']
         res.json(user)
       } else {
@@ -113,16 +120,17 @@ export default {
    *         description: Unauthorized
    */
   loginGoogle: async (req, res) => {
-    const { email, password, role, profile } = req.body
-    console.log('role', role)
+    const { email, password, profile } = req.body
+    const salt = await bcrypt.genSalt(10)
+    const hashedPassword = await bcrypt.hash(password, salt)
 
     try {
-      const user = await prisma.user.upsert({
+      const user = await prisma.users.upsert({
         where: {
           email,
         },
         update: {
-          password: password || undefined,
+          password: hashedPassword || undefined,
           profile: {
             update: {
               sub: profile.sub || undefined,
@@ -136,7 +144,7 @@ export default {
         },
         create: {
           email,
-          password: password || undefined,
+          password: hashedPassword || undefined,
           profile: {
             create: {
               sub: profile.sub || undefined,
@@ -199,7 +207,7 @@ export default {
   updateOrCreateUser: async (req, res) => {
     const { email, password, role, profile } = req.body
     try {
-      const upsertUser = await prisma.user.upsert({
+      const upsertUser = await prisma.users.upsert({
         where: {
           email,
         },
@@ -265,7 +273,7 @@ export default {
   findUser: async (req, res) => {
     const id = req.params.id
     try {
-      const user = await prisma.user.findUnique({
+      const user = await prisma.users.findUnique({
         where: {
           id,
         },
@@ -279,7 +287,7 @@ export default {
   findUserByEmail: async (req, res) => {
     const email = req.params.email
     try {
-      const user = await prisma.user.findUnique({
+      const user = await prisma.users.findUnique({
         where: {
           email: email,
         },
@@ -303,7 +311,7 @@ export default {
    */
   getAll: async (req, res) => {
     try {
-      const users = await prisma.user.findMany({
+      const users = await prisma.users.findMany({
         include: {
           profile: true,
         },
@@ -337,7 +345,7 @@ export default {
     const id = req.params.id
     const { activate } = req.body
     try {
-      const user = await prisma.user.update({
+      const user = await prisma.users.update({
         where: { id },
         data: {
           activate,
@@ -364,7 +372,7 @@ export default {
   delete: async (req, res) => {
     const { id } = req.query
     try {
-      const deleteUser = await prisma.user.delete({
+      const deleteUser = await prisma.users.delete({
         where: {
           id: id,
         },

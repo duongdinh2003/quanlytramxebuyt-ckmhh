@@ -3,11 +3,11 @@
 
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["fullTextSearch", "fullTextIndex"]
+  // previewFeatures = ["fullTextSearch", "fullTextIndex"]
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -26,13 +26,36 @@ enum Gender {
 model Users {
   id       String   @id @default(uuid())
   email    String   @unique
-  password String   @db.VarChar(32)
+  password String   @db.VarChar(256)
   role     Role     @default(USER)
   activate Boolean  @default(true)
+  profile  Profile?
 
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
+}
 
-  @@fulltext([email])
-  @@fulltext([email, password])
+model Profile {
+  id          String    @id @default(uuid())
+  sub         String?
+  email       String    @unique
+  name        String?
+  given_name  String?
+  family_name String?
+  birthday    DateTime?
+  gender      Gender?
+  address     String?
+  picture     String?    @db.Text
+  user        Users      @relation(fields: [userId], references: [id])
+  userId      String    @unique
+
+}
+
+model BusStop {
+  id              Int      @id
+  geom            Json
+  addr_street     String?  @map("addr:street")
+  addr_housenumber String? @map("addr:housenumber")
+  image         String?
+  name            String?
 }
