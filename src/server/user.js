@@ -293,7 +293,8 @@ export default {
         },
       })
       res.json(user)
-    } catch {
+    } catch (e) {
+      console.log('error: ', e)
       res.status(400).json({ message: 'Cannot find the user!' })
     }
   },

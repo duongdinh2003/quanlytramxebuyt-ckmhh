@@ -5,7 +5,7 @@
         <q-toolbar>
           <q-btn flat dense round icon="menu" @click="toggleLeftDrawer" />
           <q-toolbar-title>WebGIS Trạm Xe Bus Đà Nẵng</q-toolbar-title>
-          <q-btn color="primary" label="Thêm trạm xe" @click="openAddDialog" />
+          <q-btn color="primary" label="Thêm trạm xe" @click="openAddDialog" v-if="isAdmin" />
         </q-toolbar>
       </q-header>
 
@@ -69,7 +69,7 @@
     </q-layout>
 
     <!-- Dialog thêm trạm xe -->
-    <q-dialog v-model="addDialog" persistent>
+    <q-dialog v-model="addDialog" persistent v-if="isAdmin">
       <q-card style="min-width: 350px">
         <q-card-section>
           <div class="text-h6">Thêm trạm xe mới</div>
@@ -101,7 +101,7 @@
     </q-dialog>
 
     <!-- Dialog sửa trạm xe -->
-    <q-dialog v-model="editDialog" persistent>
+    <q-dialog v-model="editDialog" persistent v-if="isAdmin">
       <q-card style="min-width: 350px">
         <q-card-section>
           <div class="text-h6">Sửa thông tin trạm xe</div>
@@ -135,7 +135,7 @@
     </q-dialog>
 
     <!-- Dialog xác nhận xóa -->
-    <q-dialog v-model="deleteDialog" persistent>
+    <q-dialog v-model="deleteDialog" persistent v-if="isAdmin">
       <q-card>
         <q-card-section class="row items-center">
           <q-avatar icon="delete" color="negative" text-color="white" />
@@ -156,11 +156,15 @@ import { ref, onMounted, computed } from 'vue'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { i18n } from 'boot/i18n.js'
+import { useUserStore } from 'stores/user'
+import { useQuasar } from 'quasar'
 
 export default {
   name: 'MainLayout',
   setup() {
     const $t = i18n.global.t
+    const $q = useQuasar()
+    const userStore = useUserStore()
     const leftDrawerOpen = ref(true)
     const searchBusStopName = ref('')
     const searchResults = ref([])
@@ -168,6 +172,19 @@ export default {
     let map
     let busStopsLayer
     let tempMarker = null
+    const role = computed(() => userStore.getUser?.role || 'USER')
+    const isAdmin = computed(() => role.value === 'ADMIN')
+
+    const checkPermission = () => {
+      if (!isAdmin.value) {
+        $q.notify({
+          type: 'negative',
+          message: 'Bạn không có quyền thực hiện hành động này',
+        })
+        return false
+      }
+      return true
+    }
 
     // Dialog states
     const addDialog = ref(false)
@@ -252,6 +269,7 @@ export default {
     }
 
     const addBusStop = async () => {
+      if (!checkPermission()) return
       try {
         const payload = {
           name: newBusStop.value.name,
@@ -289,6 +307,7 @@ export default {
     }
 
     const updateBusStop = async () => {
+      if (!checkPermission()) return
       try {
         if (!editingBusStop.value || !editingBusStop.value.properties.id) {
           throw new Error('Missing Bus Stop ID')
@@ -325,6 +344,7 @@ export default {
     }
 
     const deleteBusStop = async () => {
+      if (!checkPermission()) return
       try {
         if (!busStopToDelete.value || !busStopToDelete.value.properties.id) {
           throw new Error('Missing bus stop ID')
