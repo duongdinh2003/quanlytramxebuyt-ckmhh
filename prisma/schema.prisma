@@ -53,10 +53,27 @@ model Profile {
 }
 
 model BusStop {
-  id              Int      @id
+  id              Int      @id @default(autoincrement())
   geom            Json
-  addr_street     String?  @map("addr:street")
-  addr_housenumber String? @map("addr:housenumber")
-  image         String?
-  name            String?
+  full_id         String?  @db.VarChar(254)
+  osm_id          String?  @db.VarChar(254)
+  osm_type        String?  @db.VarChar(254)
+  highway         String?  @db.VarChar(254)
+  description     String?  @db.VarChar(254) @map("description")
+  office          String?  @db.VarChar(254)
+  name_fr         String?  @db.VarChar(254)
+  network         String?  @db.VarChar(254)
+  name_de         String?  @db.VarChar(254)
+  name_en         String?  @db.VarChar(254)
+  amenity         String?  @db.VarChar(254)
+  name_ru         String?  @db.VarChar(254)
+  lit             String?  @db.VarChar(254)
+  bin             String?  @db.VarChar(254)
+  shelter         String?  @db.VarChar(254)
+  bench           String?  @db.VarChar(254)
+  covered         String?  @db.VarChar(254)
+  public_transport String? @db.VarChar(254) @map("public_tra")
+  name            String?  @db.VarChar(254)
+  bus             String?  @db.VarChar(254)
+  image             String?  @db.VarChar(254)
 }
